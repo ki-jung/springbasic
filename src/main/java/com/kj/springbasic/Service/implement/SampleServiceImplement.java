@@ -9,6 +9,7 @@ import com.kj.springbasic.Service.SampleService;
 import com.kj.springbasic.dto.PostSample1RequestDto;
 import com.kj.springbasic.entity.SampleTable1Entity;
 import com.kj.springbasic.entity.SampleUserEntity;
+import com.kj.springbasic.provider.JwtProvider;
 import com.kj.springbasic.repository.SampleTable1Repository;
 import com.kj.springbasic.repository.SampleUserRepository;
 
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class SampleServiceImplement implements SampleService {
+
+    private final JwtProvider jwtProvider;
     private final SampleUserRepository smapleUserRepository;
     private final SampleTable1Repository sampleTable1Repository;
 
@@ -68,6 +71,12 @@ public class SampleServiceImplement implements SampleService {
         List<SampleUserEntity> sampleuserEntities = smapleUserRepository.getNativeSql("홍길동", "부산광역시");
 
         return ResponseEntity.status(HttpStatus.OK).body(sampleuserEntities.toString());
+    }
+
+    @Override
+    public String getJwt(String name) {
+        String jwt = jwtProvider.create(name);
+        return jwt;
     }
 
 }
