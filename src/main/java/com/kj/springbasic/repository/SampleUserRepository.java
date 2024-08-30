@@ -42,28 +42,24 @@ public interface SampleUserRepository extends JpaRepository<SampleUserEntity, St
 
     // - JPQL (Java Persistence Query Language)
     // - 표준 SQL과 매우 흡사하지만 Entity 클래스와 Entity 필드로 쿼리를 작성하는 방법
-    @Query(value="SELECT u FROM user u WHERE u.name = ?1 AND u.address =?2")
+    @Query(value = "SELECT u FROM user u WHERE u.name = ?1 AND u.address =?2")
     List<SampleUserEntity> getJpql(String name, String address);
 
-    @Query(value="SELECT u FROM user u WHERE u.name = :name AND u.address =:address")
+    @Query(value = "SELECT u FROM user u WHERE u.name = :name AND u.address =:address")
     List<SampleUserEntity> getJpql2(
-        @Param("name") String name, 
-        @Param("address")String address
-        );
-    
+            @Param("name") String name,
+            @Param("address") String address);
 
     // Native SQL:
     // - 현재 RDBMS의 SQL 문법을 그대로 사용하는 문법
     // - @Query nativeQuery 속성을 반드시 true로 지정
-    @Query(value=
-    "SELECT * " +
-    "FROM sample_user "  +
-    "WHERE name = :name " +
-    "AND address = :address"
-    , nativeQuery = true)
+    @Query(value = "SELECT * " +
+            "FROM sample_user " +
+            "WHERE name = :name " +
+            "AND address = :address", nativeQuery = true)
     List<SampleUserEntity> getNativeSql(
-        @Param("name") String name,
-        @Param("address") String address
-    );
+            @Param("name") String name,
+            @Param("address") String address);
 
+    SampleUserEntity findByUserId(String userId);
 }
