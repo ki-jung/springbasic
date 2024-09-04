@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 
 import com.kj.springbasic.Service.AuthService;
 import com.kj.springbasic.dto.PostUserRequestDto;
+import com.kj.springbasic.dto.SignInRequestDto;
 import com.kj.springbasic.entity.SampleUserEntity;
+import com.kj.springbasic.provider.JwtProvider;
 import com.kj.springbasic.repository.SampleUserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthServiceImplement implements AuthService {
 
+    private final JwtProvider jwtProvider;
     private final SampleUserRepository sampleUserRepository;
 
     // PasswordEncoder 인터페이스 :
@@ -23,8 +26,9 @@ public class AuthServiceImplement implements AuthService {
     // - BCryptPasswordEncoder, SCryptPasswordEncoder, Pbkdf2PasswordEncoder
     // - String encode(평문 비밀번호): 평문 비밀번호를 암호화하여 반환
     // - boolean matches(평문 비밀번호, 암호화된 비밀번호): 평문비밀번호와 암호화된 비밀번호가 일치하는지 여부를 반환
-    
+
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Override
     public String signUp(PostUserRequestDto dto) {
 
@@ -66,6 +70,30 @@ public class AuthServiceImplement implements AuthService {
         } catch (Exception exception) {
             exception.printStackTrace();
             return "예외발생!";
+        }
+    }
+
+    @Override
+    public String signIn(SignInRequestDto dto) {
+
+        try {
+            String userId = dto.getUserId();
+            SampleUserEntity userEntity = sampleUserRepository.findByUserId(userId);
+            if (userEntity == null)
+                return "존재하는 아이디";
+
+            String password = dto.getPassword();
+            String encodedPassword = userEntity.getPassword();
+
+            boolean isMatched = passwordEncoder.matches(password, encodedPassword);
+            if (!isMatched)
+                return "존재하는 비밀번호";
+            
+            String token = jwtProvider.create(userId);
+            return token;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return "예외 발생";
         }
     }
 
